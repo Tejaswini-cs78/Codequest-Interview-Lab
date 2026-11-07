@@ -72,8 +72,16 @@ router.get('/next', async (req, res) => {
     }
 
     const { solutionCode, correctOption, ...safeQuestion } = nextQ;
-    safeQuestion.sourceCode = safeQuestion.sourceCode || safeQuestion.starterCode || safeQuestion.code || '';
-    safeQuestion.starterCode = safeQuestion.starterCode || safeQuestion.sourceCode || '';
+    const isSqlScratch =
+      (safeQuestion.mode === 'WRITE_FROM_SCRATCH' || safeQuestion.mode === 'WRITE_CODE') &&
+      safeQuestion.language === 'sql';
+    if (isSqlScratch) {
+      safeQuestion.starterCode = '';
+      safeQuestion.sourceCode = '';
+    } else {
+      safeQuestion.sourceCode = safeQuestion.sourceCode || safeQuestion.starterCode || safeQuestion.code || '';
+      safeQuestion.starterCode = safeQuestion.starterCode || safeQuestion.sourceCode || '';
+    }
     res.json({ question: safeQuestion });
   } catch (err) {
     console.error('Error fetching next question:', err);
@@ -123,8 +131,16 @@ router.get('/', async (req, res) => {
     // Remove solution / correct answer details for security
     const sanitized = resultQuestions.map((q) => {
       const { solutionCode, correctOption, ...safeQuestion } = q;
-      safeQuestion.sourceCode = safeQuestion.sourceCode || safeQuestion.starterCode || safeQuestion.code || '';
-      safeQuestion.starterCode = safeQuestion.starterCode || safeQuestion.sourceCode || '';
+      const isSqlScratch =
+        (safeQuestion.mode === 'WRITE_FROM_SCRATCH' || safeQuestion.mode === 'WRITE_CODE') &&
+        safeQuestion.language === 'sql';
+      if (isSqlScratch) {
+        safeQuestion.starterCode = '';
+        safeQuestion.sourceCode = '';
+      } else {
+        safeQuestion.sourceCode = safeQuestion.sourceCode || safeQuestion.starterCode || safeQuestion.code || '';
+        safeQuestion.starterCode = safeQuestion.starterCode || safeQuestion.sourceCode || '';
+      }
       return safeQuestion;
     });
 

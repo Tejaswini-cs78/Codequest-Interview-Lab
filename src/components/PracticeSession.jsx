@@ -64,7 +64,10 @@ export default function PracticeSession({ sessionConfig, onUpdateStats, onGoHome
   // Setup current question state
   const setupQuestion = (q) => {
     if (!q) return;
-    const startCode = q.starterCode || '';
+    const isSqlScratch =
+      (sessionConfig.mode === 'WRITE_FROM_SCRATCH' || q.mode === 'WRITE_FROM_SCRATCH') &&
+      (sessionConfig.language === 'sql' || q.language === 'sql');
+    const startCode = isSqlScratch ? '' : (q.starterCode || '');
     setUserCode(startCode);
     setInitialCode(startCode);
     setSelectedOption('');
@@ -94,7 +97,10 @@ export default function PracticeSession({ sessionConfig, onUpdateStats, onGoHome
 
   // Handle Reset code and execution result
   const handleReset = () => {
-    setUserCode(initialCode);
+    const isSqlScratch =
+      (sessionConfig.mode === 'WRITE_FROM_SCRATCH' || currentQuestion?.mode === 'WRITE_FROM_SCRATCH') &&
+      (sessionConfig.language === 'sql' || currentQuestion?.language === 'sql');
+    setUserCode(isSqlScratch ? '' : initialCode);
     setResult(null);
     setIsSubmitted(false);
   };
@@ -107,7 +113,10 @@ export default function PracticeSession({ sessionConfig, onUpdateStats, onGoHome
     if (!userCode || !userCode.trim()) {
       setResult({
         verdict: 'EMPTY_SUBMISSION',
-        error: 'Please write your code before running.',
+        error:
+          sessionConfig.language === 'sql' || currentQuestion.language === 'sql'
+            ? 'Please write your SQL query before running.'
+            : 'Please write your code before running.',
       });
       return;
     }
@@ -130,7 +139,7 @@ export default function PracticeSession({ sessionConfig, onUpdateStats, onGoHome
       setResult(null);
 
       let res;
-      if (sessionConfig.language === 'sql') {
+      if (sessionConfig.language === 'sql' || currentQuestion.language === 'sql') {
         res = await executeSql({
           questionId: currentQuestion.id,
           query: userCode,
@@ -372,6 +381,12 @@ export default function PracticeSession({ sessionConfig, onUpdateStats, onGoHome
                 onReset={handleReset}
                 disabled={isRunning}
                 missingCodePlaceholder={currentQuestion.missingCodePlaceholder}
+                placeholder={
+                  (sessionConfig.mode === 'WRITE_FROM_SCRATCH' || currentQuestion.mode === 'WRITE_FROM_SCRATCH') &&
+                  (sessionConfig.language === 'sql' || currentQuestion.language === 'sql')
+                    ? 'Write your SQL query here...'
+                    : undefined
+                }
               />
             </div>
           )}

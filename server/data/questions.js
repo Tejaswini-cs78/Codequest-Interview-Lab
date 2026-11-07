@@ -681,10 +681,7 @@ public class Main {
 +-------------+-------------+---------------+---------------+
 
 Write a SELECT query to retrieve the \`name\` and \`salary\` of all employees whose salary is strictly greater than 50000, ordered by salary descending.`,
-    starterCode: `-- Write your SQL query below
-SELECT name, salary 
-FROM Employees 
-WHERE ...`,
+    starterCode: '',
     solutionCode: `SELECT name, salary FROM Employees WHERE salary > 50000 ORDER BY salary DESC;`,
     sqlTable: {
       tableName: 'Employees',
@@ -725,10 +722,7 @@ WHERE ...`,
 +-------------+-------------+---------------+---------------+
 
 Write a query to display the \`department\` and the average salary (\`avg_salary\`) for each department, ordered alphabetically by department name.`,
-    starterCode: `-- Write your SQL query below
-SELECT department, AVG(salary) AS avg_salary
-FROM Employees
-...`,
+    starterCode: '',
     solutionCode: `SELECT department, AVG(salary) AS avg_salary FROM Employees GROUP BY department ORDER BY department ASC;`,
     sqlTable: {
       tableName: 'Employees',

@@ -592,10 +592,7 @@ public class Main {
     title: 'Total Revenue by Customer',
     question: 'Write an SQL query to calculate total spending per customer.',
     description: 'Table: Orders\n+----------------+-----------------+---------------+\n| order_id (INT) | customer (TEXT) | amount (INT)  |\n+----------------+-----------------+---------------+\n| 1              | Alice           | 200           |\n| 2              | Bob             | 150           |\n| 3              | Alice           | 300           |\n| 4              | Charlie         | 500           |\n+----------------+-----------------+---------------+\n\nWrite a query to retrieve customer name and sum of amount as total_amount, grouped by customer and ordered by total_amount descending.',
-    starterCode: `SELECT customer, SUM(amount) AS total_amount
-FROM Orders
-GROUP BY customer
-ORDER BY total_amount DESC;`,
+    starterCode: '',
     solutionCode: `SELECT customer, SUM(amount) AS total_amount
 FROM Orders
 GROUP BY customer
@@ -618,11 +615,7 @@ ORDER BY total_amount DESC;`,
     title: 'Customer Order Count',
     question: 'Write an SQL query to list all customers and their total number of orders.',
     description: 'Tables:\nCustomers: id, name\nOrders: order_id, customer_id, amount\n\nWrite a query to display customer name and the count of their orders as order_count, including customers with 0 orders (use LEFT JOIN). Order alphabetically by customer name.',
-    starterCode: `SELECT c.name, COUNT(o.order_id) AS order_count
-FROM Customers c
-LEFT JOIN Orders o ON c.id = o.customer_id
-GROUP BY c.name
-ORDER BY c.name ASC;`,
+    starterCode: '',
     solutionCode: `SELECT c.name, COUNT(o.order_id) AS order_count
 FROM Customers c
 LEFT JOIN Orders o ON c.id = o.customer_id

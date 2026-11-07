@@ -16,12 +16,14 @@ export default function CodeEditor({
   onReset,
   disabled = false,
   missingCodePlaceholder = null,
+  placeholder = null,
 }) {
   const [copied, setCopied] = useState(false);
+  const [isEditorReady, setIsEditorReady] = useState(false);
   const monacoLanguage = MONACO_LANG_MAP[language?.toLowerCase()] || 'plaintext';
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(value);
+    navigator.clipboard.writeText(value || '');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -77,11 +79,17 @@ export default function CodeEditor({
 
       {/* Editor Body */}
       <div className="flex-1 min-h-[300px] relative">
+        {isEditorReady && (!value || value.length === 0) && placeholder && (
+          <div className="absolute top-[12px] left-[62px] text-slate-500 font-mono text-sm pointer-events-none select-none z-10">
+            {placeholder}
+          </div>
+        )}
         <Editor
           height="100%"
           language={monacoLanguage}
           theme="vs-dark"
           value={value}
+          onMount={() => setIsEditorReady(true)}
           onChange={(val) => onChange(val || '')}
           options={{
             fontSize: 14,

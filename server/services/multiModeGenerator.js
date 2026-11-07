@@ -219,7 +219,7 @@ public class Main {
       title: `Employees Earning Above $${minSal}`,
       question: `Write an SQL query to select employees with salary above ${minSal}.`,
       description: `Retrieve 'name' and 'salary' for all employees earning > ${minSal}, ordered by salary DESC.`,
-      starterCode: `SELECT name, salary FROM Employees WHERE salary > ${minSal} ORDER BY salary DESC;`,
+      starterCode: '',
       solutionCode: `SELECT name, salary FROM Employees WHERE salary > ${minSal} ORDER BY salary DESC;`,
       sqlTable: {
         tableName: 'Employees',
