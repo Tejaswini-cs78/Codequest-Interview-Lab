@@ -3,3 +3,5 @@ dist/
 .env
 .env.*
 !.env.example
+server/data/users.json
+server/data/question_history.json

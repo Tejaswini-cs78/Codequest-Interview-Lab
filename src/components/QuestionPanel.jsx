@@ -1,6 +1,31 @@
 import React from 'react';
 import { HelpCircle, Database, CheckCircle2, AlertCircle, FileText, Sparkles, Code2 } from 'lucide-react';
 
+// Helper to normalize any option shape (object or string) into a clean { id, text }
+function normalizeOption(opt, index) {
+  const letters = ['A', 'B', 'C', 'D'];
+  const defaultId = letters[index] || String.fromCharCode(65 + index);
+
+  if (!opt) return { id: defaultId, text: '' };
+
+  if (typeof opt === 'string') {
+    const trimmed = opt.trim();
+    const match = trimmed.match(/^([A-D])[\.\:\)]\s*([\s\S]*)$/i);
+    if (match) {
+      return { id: match[1].toUpperCase(), text: match[2] };
+    }
+    return { id: defaultId, text: trimmed };
+  }
+
+  if (typeof opt === 'object') {
+    const id = (opt.id || opt.label || opt.key || defaultId).toString().toUpperCase();
+    const text = (opt.text ?? opt.value ?? opt.output ?? opt.description ?? '').toString();
+    return { id, text };
+  }
+
+  return { id: defaultId, text: String(opt) };
+}
+
 export default function QuestionPanel({
   question,
   currentIndex,
@@ -135,45 +160,97 @@ export default function QuestionPanel({
             <span>Select the Correct Output:</span>
           </h3>
 
-          <div className="space-y-2.5">
-            {question.options.map((opt) => {
+          <div className="space-y-3">
+            {question.options.map((rawOpt, idx) => {
+              const opt = normalizeOption(rawOpt, idx);
               const isSelected = selectedOption === opt.id;
               const isCorrectOpt = result && result.correctOption === opt.id;
               const isWrongSelection = isSubmitted && isSelected && !isCorrectOpt;
 
-              let btnStyle = 'bg-slate-950 border-slate-800 text-slate-200 hover:border-slate-700';
+              let containerStyle = 'bg-slate-950/90 border-slate-800 text-slate-100 hover:border-slate-700 hover:bg-slate-900/60 cursor-pointer';
 
               if (isSubmitted) {
                 if (isCorrectOpt) {
-                  btnStyle = 'bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold';
+                  containerStyle = 'bg-emerald-950/40 border-emerald-500 text-emerald-200 ring-1 ring-emerald-500/50';
                 } else if (isWrongSelection) {
-                  btnStyle = 'bg-rose-500/20 border-rose-500 text-rose-300';
+                  containerStyle = 'bg-rose-950/40 border-rose-500 text-rose-200 ring-1 ring-rose-500/50';
+                } else {
+                  containerStyle = 'bg-slate-950/40 border-slate-800/60 text-slate-400 opacity-60';
                 }
               } else if (isSelected) {
-                btnStyle = 'bg-purple-600/30 border-purple-500 text-white font-bold ring-2 ring-purple-500/40';
+                containerStyle = 'bg-purple-950/40 border-purple-500 text-white font-medium ring-2 ring-purple-500/50 shadow-lg shadow-purple-500/20';
               }
 
               return (
-                <button
-                  key={opt.id}
-                  disabled={isSubmitted}
-                  onClick={() => onSelectOption(opt.id)}
-                  className={`w-full text-left p-3.5 rounded-xl border text-sm font-mono flex items-center justify-between transition-all ${btnStyle}`}
+                <div
+                  key={opt.id || idx}
+                  onClick={() => !isSubmitted && onSelectOption(opt.id)}
+                  role="radio"
+                  aria-checked={isSelected}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if ((e.key === ' ' || e.key === 'Enter') && !isSubmitted) {
+                      e.preventDefault();
+                      onSelectOption(opt.id);
+                    }
+                  }}
+                  className={`w-full p-4 rounded-xl border text-sm font-mono flex items-start justify-between gap-3 transition-all ${containerStyle}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center font-bold text-xs">
+                  <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                    {/* Radio Button Circle Indicator */}
+                    <div className="pt-0.5 shrink-0">
+                      <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                        isSelected
+                          ? isSubmitted && isCorrectOpt
+                            ? 'border-emerald-400 bg-emerald-500/20'
+                            : isSubmitted && isWrongSelection
+                            ? 'border-rose-400 bg-rose-500/20'
+                            : 'border-purple-400 bg-purple-500/20'
+                          : 'border-slate-700 bg-slate-900'
+                      }`}>
+                        {isSelected && (
+                          <div className={`w-2.5 h-2.5 rounded-full ${
+                            isSubmitted && isCorrectOpt
+                              ? 'bg-emerald-400'
+                              : isSubmitted && isWrongSelection
+                              ? 'bg-rose-400'
+                              : 'bg-purple-400'
+                          }`} />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Option Letter Badge (A, B, C, D) */}
+                    <span className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 select-none ${
+                      isSelected ? 'bg-purple-600 text-white' : 'bg-slate-800 text-slate-300'
+                    }`}>
                       {opt.id}
                     </span>
-                    <span className="whitespace-pre-wrap">{opt.text}</span>
+
+                    {/* Full Option Output Text (supports multiline and special characters) */}
+                    <div className="flex-1 min-w-0 text-slate-100 font-mono text-xs md:text-sm whitespace-pre-wrap break-words leading-relaxed selection:bg-purple-900 selection:text-white">
+                      {opt.text}
+                    </div>
                   </div>
 
+                  {/* Submission Status Indicator Icons */}
                   {isSubmitted && isCorrectOpt && (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                    <div className="shrink-0 pt-0.5">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        <span className="hidden sm:inline">Correct</span>
+                      </span>
+                    </div>
                   )}
                   {isSubmitted && isWrongSelection && (
-                    <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+                    <div className="shrink-0 pt-0.5">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+                        <AlertCircle className="w-4 h-4 text-rose-400" />
+                        <span className="hidden sm:inline">Incorrect</span>
+                      </span>
+                    </div>
                   )}
-                </button>
+                </div>
               );
             })}
           </div>

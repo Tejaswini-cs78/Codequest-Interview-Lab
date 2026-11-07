@@ -271,10 +271,10 @@ print(result)`,
 result = data[${startIdx}::${step}]
 print(result)`,
       options: [
-        `A. ${optionA}`,
-        `B. ${optionB}`,
-        `C. ${optionC}`,
-        `D. ${optionD}`
+        { id: 'A', text: optionA },
+        { id: 'B', text: optionB },
+        { id: 'C', text: optionC },
+        { id: 'D', text: optionD }
       ],
       correctOption: 'A',
       expectedOutput: resultStr,
@@ -314,10 +314,10 @@ int main() {
     return 0;
 }`,
       options: [
-        `A. ${realOutput}`,
-        `B. ${(a / b).toFixed(2)} ${realMod}`,
-        `C. ${realMod} ${realDiv}`,
-        `D. ${a} ${b}`
+        { id: 'A', text: realOutput },
+        { id: 'B', text: `${(a / b).toFixed(2)} ${realMod}` },
+        { id: 'C', text: `${realMod} ${realDiv}` },
+        { id: 'D', text: `${a} ${b}` }
       ],
       correctOption: 'A',
       expectedOutput: realOutput,
@@ -353,10 +353,10 @@ int main() {
     }
 }`,
       options: [
-        `A. Result: ${res}`,
-        `B. Result: ${x}${y}`,
-        `C. ${res}`,
-        `D. Error: incompatible types`
+        { id: 'A', text: `Result: ${res}` },
+        { id: 'B', text: `Result: ${x}${y}` },
+        { id: 'C', text: `${res}` },
+        { id: 'D', text: 'Error: incompatible types' }
       ],
       correctOption: 'A',
       expectedOutput: `Result: ${res}`,

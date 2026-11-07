@@ -130,7 +130,9 @@ router.post('/answer/submit', (req, res) => {
     return res.status(400).json({ error: 'Invalid question for output prediction.' });
   }
 
-  const isCorrect = selectedOption === question.correctOption;
+  const cleanSelected = (selectedOption || '').toString().trim().charAt(0).toUpperCase();
+  const cleanCorrect = (question.correctOption || '').toString().trim().charAt(0).toUpperCase();
+  const isCorrect = cleanSelected === cleanCorrect;
 
   // Record user attempt if authenticated
   const token = getBearerToken(req);
